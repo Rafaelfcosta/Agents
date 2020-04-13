@@ -11,8 +11,8 @@ import jade.core.Agent;
  *
  * @author rafae
  */
-public abstract class Char extends Agent{
-    
+public abstract class Char extends Agent {
+
     private int MAX_HP;
     private int CURRENT_HP;
 
@@ -30,5 +30,15 @@ public abstract class Char extends Agent{
 
     public void setCURRENT_HP(int CURRENT_HP) {
         this.CURRENT_HP = CURRENT_HP;
+    }
+
+    public void heal(int healSize) {
+        int newHp = getCURRENT_HP() + healSize;
+        if (newHp > getMAX_HP()) {
+            setCURRENT_HP(getMAX_HP());
+        } else {
+            setCURRENT_HP(newHp);
+        }
+
     }
 }
