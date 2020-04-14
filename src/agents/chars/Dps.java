@@ -19,7 +19,7 @@ import java.util.logging.Logger;
  *
  * @author rafae
  */
-public class Tank extends Char {
+public class Dps extends Char {
 
     @Override
     protected void setup() {
@@ -29,7 +29,7 @@ public class Tank extends Char {
             setCURRENT_HP(Integer.parseInt((String) args[0]));
         }
 
-        System.out.println("Tank " + getAID().getName() + " is ready with " + getCURRENT_HP() + " HP");
+        System.out.println("Dps " + getAID().getName() + " is ready with " + getCURRENT_HP() + " HP");
 
         addBehaviour(new TickerBehaviour(this, 3000) {
 
@@ -55,7 +55,7 @@ public class Tank extends Char {
                         }
 
                     } catch (FIPAException ex) {
-                        Logger.getLogger(Tank.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(Dps.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
 
@@ -88,6 +88,6 @@ public class Tank extends Char {
     @Override
     public void doDelete() {
         super.doDelete();
-        System.out.println("Tank " + getAID().getName() + " died");
+        System.out.println("Dps " + getAID().getName() + " died");
     }
 }
