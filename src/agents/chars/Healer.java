@@ -5,7 +5,6 @@
  */
 package agents.chars;
 
-import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
@@ -17,7 +16,6 @@ import jade.lang.acl.ACLMessage;
  * @author rafae
  */
 public class Healer extends Char {
-
     private final int HEAL_AMOUT = 150;
     private final int healCooldown = 5000;
     private Long lastHeal = System.currentTimeMillis();
