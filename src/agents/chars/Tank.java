@@ -31,26 +31,37 @@ public class Tank extends Char {
 
         System.out.println("Tank " + getAID().getName() + " is ready with " + getCURRENT_HP() + " HP");
 
-        addBehaviour(new TickerBehaviour(this, 4000) {
+        DFAgentDescription dfd = new DFAgentDescription();
+        dfd.setName(getAID());
+        ServiceDescription teamService = new ServiceDescription();
+        teamService.setType("hero");
+        teamService.setName("Team");
+        dfd.addServices(teamService);
+
+        try {
+            DFService.register(this, dfd);
+        } catch (FIPAException ex) {
+            ex.printStackTrace();
+        }
+
+        DFAgentDescription healsearch = new DFAgentDescription();
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType("heal");
+        healsearch.addServices(sd);
+
+        addBehaviour(new CyclicBehaviour(this) {
 
             @Override
-            protected void onTick() {
-                setCURRENT_HP(getCURRENT_HP() - 100);
-                System.out.println(myAgent.getName() + " losing hp " + getCURRENT_HP());
+            public void action() {
 
                 if (getCURRENT_HP() <= getMAX_HP() / 2) {
-                    DFAgentDescription healsearch = new DFAgentDescription();
-                    ServiceDescription sd = new ServiceDescription();
-                    sd.setType("heal");
-                    healsearch.addServices(sd);
 
                     try {
                         DFAgentDescription[] result = DFService.search(myAgent, healsearch);
                         if (result.length != 0) {
-                            System.out.println(result[0].getName().getLocalName() + " is a healer");
                             ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
                             msg.addReceiver(result[0].getName());
-                            msg.setContent("heal");
+                            msg.setContent("needheal");
                             myAgent.send(msg);
                         }
 
@@ -62,19 +73,16 @@ public class Tank extends Char {
                 if (getCURRENT_HP() <= 0) {
                     doDelete();
                 }
-            }
-        });
 
-        addBehaviour(new CyclicBehaviour(this) {
-
-            @Override
-            public void action() {
                 ACLMessage msg = myAgent.receive();
                 if (msg != null) {
-                    String content = msg.getContent();
-                    if (msg.getPerformative() == ACLMessage.INFORM) {
-                        System.out.println("healing " + content + " points");
-                        heal(Integer.parseInt(content));
+                    if (msg.getContent().startsWith("healing")) {
+                        System.out.println("healing " + getParams(msg.getContent())[1] + " points");
+                        heal(Integer.parseInt(getParams(msg.getContent())[1]));
+                        System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP");
+                    } else if (msg.getContent().startsWith("damage")) {
+                        System.out.println(getAID().getLocalName() +" taking damage from " + msg.getSender().getLocalName() + getParams(msg.getContent())[1] + " points");
+                        damage(Integer.parseInt(getParams(msg.getContent())[1]));
                         System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP");
                     } else {
                         block();
@@ -84,9 +92,4 @@ public class Tank extends Char {
         });
     }
 
-    @Override
-    public void doDelete() {
-        super.doDelete();
-        System.out.println("Tank " + getAID().getName() + " died");
-    }
 }

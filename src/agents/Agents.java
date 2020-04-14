@@ -22,7 +22,7 @@ public class Agents extends Agent {
     public static void main(String[] args) {
         String[] params = new String[2];
         params[0] = "-gui";
-        params[1] = "Mercy:agents.chars.Healer(100); Rein:agents.chars.Tank(500)";
+        params[1] = "Mercy:agents.chars.Healer(100); Rein:agents.chars.Tank(500); Hilha:agents.chars.Enemy(200); Genji:agents.chars.Dps(100)";
         Boot.main(params);
     }
 }

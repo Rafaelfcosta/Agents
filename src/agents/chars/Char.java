@@ -6,6 +6,11 @@
 package agents.chars;
 
 import jade.core.Agent;
+import jade.domain.DFService;
+import jade.domain.FIPAException;
+import jade.lang.acl.ACLMessage;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -39,6 +44,29 @@ public abstract class Char extends Agent {
         } else {
             setCURRENT_HP(newHp);
         }
-
+    }
+    
+    public void damage(int damageSize) {
+        int newHp = getCURRENT_HP() - damageSize;
+        if (newHp < 0) {
+            setCURRENT_HP(0);
+        } else {
+            setCURRENT_HP(newHp);
+        }
+    }
+    
+    @Override
+    public void doDelete() {
+        super.doDelete();
+        System.out.println(getAID().getName() + " died");
+        try {
+            DFService.deregister(this);
+        } catch (FIPAException ex) {
+            Logger.getLogger(Tank.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public String[] getParams(String msg){
+        return msg.split(","); 
     }
 }
