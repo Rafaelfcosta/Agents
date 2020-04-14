@@ -31,7 +31,7 @@ public class Tank extends Char {
 
         System.out.println("Tank " + getAID().getName() + " is ready with " + getCURRENT_HP() + " HP");
 
-        addBehaviour(new TickerBehaviour(this, 3000) {
+        addBehaviour(new TickerBehaviour(this, 4000) {
 
             @Override
             protected void onTick() {
@@ -74,12 +74,11 @@ public class Tank extends Char {
                     String content = msg.getContent();
                     if (msg.getPerformative() == ACLMessage.INFORM) {
                         System.out.println("healing " + content + " points");
-                        setCURRENT_HP(getCURRENT_HP() + Integer.parseInt(content));
+                        heal(Integer.parseInt(content));
                         System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP");
                     } else {
                         block();
                     }
-
                 }
             }
         });
