@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  *
  * @author rafae
  */
-public class Healer extends Char {
+public class Healer extends Hero {
 
     private final int HEAL_AMOUT = 150;
     private final int healCooldown = 4000;
@@ -26,26 +26,18 @@ public class Healer extends Char {
 
     @Override
     protected void setup() {
-        Object[] args = getArguments();
-        if (args != null && args.length > 0) {
-            setMAX_HP(Integer.parseInt((String) args[0]));
-            setCURRENT_HP(Integer.parseInt((String) args[0]));
+        super.setup();
+        
+        try {
+            DFService.deregister(this);
+        } catch (FIPAException ex) {
+            Logger.getLogger(Healer.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-        System.out.println("Healer " + getAID().getName() + " is ready with " + getCURRENT_HP() + " HP");
-
-        DFAgentDescription dfd = new DFAgentDescription();
-        dfd.setName(getAID());
-        ServiceDescription teamService = new ServiceDescription();
-        teamService.setType("hero");
-        teamService.setName("Team");
 
         ServiceDescription healingService = new ServiceDescription();
         healingService.setType("heal");
         healingService.setName("Healing");
-
         dfd.addServices(healingService);
-        dfd.addServices(teamService);
 
         try {
             DFService.register(this, dfd);
@@ -53,38 +45,11 @@ public class Healer extends Char {
             ex.printStackTrace();
         }
         
-        DFAgentDescription healsearch = new DFAgentDescription();
-        ServiceDescription sd = new ServiceDescription();
-        sd.setType("heal");
-        healsearch.addServices(sd);
+        System.out.println("Healer " + getAID().getName() + " is ready with " + getCURRENT_HP() + " HP");
 
         addBehaviour(new CyclicBehaviour(this) {
-            
-            
-
             @Override
             public void action() {
-                
-                if (getCURRENT_HP() <= getMAX_HP() / 2) {
-
-                    try {
-                        DFAgentDescription[] result = DFService.search(myAgent, healsearch);
-                        if (result.length != 0) {
-                            
-                            ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
-                            msg.addReceiver(result[0].getName());
-                            msg.setContent("needheal");
-                            myAgent.send(msg);
-                        }
-
-                    } catch (FIPAException ex) {
-                        Logger.getLogger(Tank.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-                
-                if (getCURRENT_HP() <= 0) {
-                    doDelete();
-                }
 
                 ACLMessage msg = myAgent.receive();
                 if (msg != null) {
@@ -97,14 +62,6 @@ public class Healer extends Char {
                             myAgent.send(reply);
                             lastHeal = System.currentTimeMillis();
                         }
-                    } else if (msg.getContent().startsWith("healing")) {
-                        System.out.println("healing " + getParams(msg.getContent())[1] + " points");
-                        heal(Integer.parseInt(getParams(msg.getContent())[1]));
-                        System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP");
-                    } else if (msg.getContent().startsWith("damage")) {
-                        System.out.println(getAID().getLocalName() + " taking damage from " + msg.getSender().getLocalName() + getParams(msg.getContent())[1] + " points");
-                        damage(Integer.parseInt(getParams(msg.getContent())[1]));
-                        System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP");
                     } else {
                         block();
                     }
@@ -113,12 +70,4 @@ public class Healer extends Char {
         }
         );
     }
-
-    @Override
-
-    protected void takeDown() {
-        super.takeDown();
-        System.out.println("Healer " + getAID().getName() + " leaving");
-    }
-
 }

@@ -6,7 +6,10 @@
 package agents.chars;
 
 import jade.core.Agent;
+import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
+import jade.domain.FIPAAgentManagement.DFAgentDescription;
+import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import java.util.logging.Level;
@@ -20,6 +23,40 @@ public abstract class Char extends Agent {
 
     private int MAX_HP;
     private int CURRENT_HP;
+
+    @Override
+    protected void setup() {
+        Object[] args = getArguments();
+        if (args != null && args.length > 0) {
+            setMAX_HP(Integer.parseInt((String) args[0]));
+            setCURRENT_HP(Integer.parseInt((String) args[0]));
+        }
+
+        addBehaviour(new CyclicBehaviour(this) {
+
+            @Override
+            public void action() {
+                if (getCURRENT_HP() <= 0) {
+                    doDelete();
+                }
+                
+                ACLMessage msg = myAgent.receive();
+                if (msg != null) {
+                    if (msg.getContent().startsWith("healing")) {
+                        System.out.println(myAgent.getLocalName() + " healing " + getParams(msg.getContent())[1] + " points");
+                        heal(Integer.parseInt(getParams(msg.getContent())[1]));
+                        System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP");
+                    } else if (msg.getContent().startsWith("damage")) {
+                        System.out.println(getAID().getLocalName() +" taking damage from " + msg.getSender().getLocalName() + " by " + getParams(msg.getContent())[1] + " points");
+                        damage(Integer.parseInt(getParams(msg.getContent())[1]));
+                        System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP");
+                    } else {
+                        block();
+                    }
+                }
+            }
+        });
+    }
 
     public int getMAX_HP() {
         return MAX_HP;
@@ -59,14 +96,23 @@ public abstract class Char extends Agent {
     public void doDelete() {
         super.doDelete();
         System.out.println(getAID().getName() + " died");
+        
+    }
+
+    @Override
+    protected void takeDown() {
+        super.takeDown();
         try {
             DFService.deregister(this);
         } catch (FIPAException ex) {
-            Logger.getLogger(Tank.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(Char.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
     }
-    
+        
     public String[] getParams(String msg){
         return msg.split(","); 
     }
+    
+    
 }
