@@ -6,7 +6,6 @@
 package agents.chars;
 
 import jade.core.AID;
-import jade.core.behaviours.CyclicBehaviour;
 import jade.core.behaviours.TickerBehaviour;
 import jade.domain.DFService;
 import jade.domain.FIPAAgentManagement.DFAgentDescription;
@@ -38,16 +37,16 @@ public class Enemy extends Char {
         teamService.setName("Team");
         dfd.addServices(teamService);
 
-        DFAgentDescription teamSearch = new DFAgentDescription();
-        ServiceDescription sd = new ServiceDescription();
-        sd.setType("hero");
-        teamSearch.addServices(sd);
-
         try {
             DFService.register(this, dfd);
         } catch (FIPAException ex) {
             Logger.getLogger(Enemy.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        DFAgentDescription teamSearch = new DFAgentDescription();
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType("hero");
+        teamSearch.addServices(sd);
 
         addBehaviour(new TickerBehaviour(this, atkCooldown) {
             @Override
