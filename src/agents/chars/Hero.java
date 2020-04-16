@@ -21,7 +21,8 @@ import java.util.logging.Logger;
 public class Hero extends Char {
 
     public DFAgentDescription dfd = new DFAgentDescription();
-
+    public DFAgentDescription enemySearch = new DFAgentDescription();
+    
     @Override
     protected void setup() {
         super.setup();
@@ -31,17 +32,21 @@ public class Hero extends Char {
         teamService.setType("hero");
         teamService.setName("Team");
         dfd.addServices(teamService);
+        
+        try {
+            DFService.register(this, dfd);
+        } catch (FIPAException ex) {
+            ex.printStackTrace();
+        }
 
         DFAgentDescription healsearch = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
         sd.setType("heal");
         healsearch.addServices(sd);
 
-        try {
-            DFService.register(this, dfd);
-        } catch (FIPAException ex) {
-            ex.printStackTrace();
-        }
+        ServiceDescription esd = new ServiceDescription();
+        esd.setType("badguys");
+        enemySearch.addServices(esd);
 
         addBehaviour(new CyclicBehaviour(this) {
 

@@ -8,8 +8,6 @@ package agents.chars;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import java.util.logging.Level;
@@ -23,6 +21,8 @@ public abstract class Char extends Agent {
 
     private int MAX_HP;
     private int CURRENT_HP;
+    public int ARMOR_HP = 0;
+    public int CURRENT_ARMOR_HP = 0;
 
     @Override
     protected void setup() {
@@ -30,6 +30,7 @@ public abstract class Char extends Agent {
         if (args != null && args.length > 0) {
             setMAX_HP(Integer.parseInt((String) args[0]));
             setCURRENT_HP(Integer.parseInt((String) args[0]));
+
         }
 
         addBehaviour(new CyclicBehaviour(this) {
@@ -39,7 +40,7 @@ public abstract class Char extends Agent {
                 if (getCURRENT_HP() <= 0) {
                     doDelete();
                 }
-                
+
                 ACLMessage msg = myAgent.receive();
                 if (msg != null) {
                     if (msg.getContent().startsWith("healing")) {
@@ -47,9 +48,13 @@ public abstract class Char extends Agent {
                         heal(Integer.parseInt(getParams(msg.getContent())[1]));
                         System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP");
                     } else if (msg.getContent().startsWith("damage")) {
-                        System.out.println(getAID().getLocalName() +" taking damage from " + msg.getSender().getLocalName() + " by " + getParams(msg.getContent())[1] + " points");
+                        System.out.println(getAID().getLocalName() + " taking damage from " + msg.getSender().getLocalName() + " by " + getParams(msg.getContent())[1] + " points");
                         damage(Integer.parseInt(getParams(msg.getContent())[1]));
-                        System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP");
+                        if (getARMOR_HP() == 0) {
+                            System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP");
+                        } else {
+                            System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP - Armor " + getCURRENT_ARMOR_HP());
+                        }
                     } else {
                         block();
                     }
@@ -82,21 +87,36 @@ public abstract class Char extends Agent {
             setCURRENT_HP(newHp);
         }
     }
-    
+
     public void damage(int damageSize) {
-        int newHp = getCURRENT_HP() - damageSize;
+        if (getCURRENT_ARMOR_HP() == 0) {
+            int newHp = getCURRENT_HP() - damageSize;
+            changeLife(newHp);
+        } else {
+            int newArmor = getCURRENT_ARMOR_HP() - damageSize;
+            if (newArmor < 0) {
+                setCURRENT_ARMOR_HP(0);
+                int newHp = getCURRENT_HP() - (newArmor * -1);
+                changeLife(newHp);
+            } else {
+                setCURRENT_ARMOR_HP(newArmor);
+            }
+        }
+    }
+
+    public void changeLife(int newHp) {
         if (newHp < 0) {
             setCURRENT_HP(0);
         } else {
             setCURRENT_HP(newHp);
         }
     }
-    
+
     @Override
     public void doDelete() {
         super.doDelete();
         System.out.println(getAID().getName() + " died");
-        
+
     }
 
     @Override
@@ -107,12 +127,27 @@ public abstract class Char extends Agent {
         } catch (FIPAException ex) {
             Logger.getLogger(Char.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
     }
-        
-    public String[] getParams(String msg){
-        return msg.split(","); 
+
+    public String[] getParams(String msg) {
+        return msg.split(",");
     }
-    
-    
+
+    public int getARMOR_HP() {
+        return ARMOR_HP;
+    }
+
+    public void setARMOR_HP(int ARMOR_HP) {
+        this.ARMOR_HP = ARMOR_HP;
+    }
+
+    public int getCURRENT_ARMOR_HP() {
+        return CURRENT_ARMOR_HP;
+    }
+
+    public void setCURRENT_ARMOR_HP(int CURRENT_ARMOR_HP) {
+        this.CURRENT_ARMOR_HP = CURRENT_ARMOR_HP;
+    }
+
 }
