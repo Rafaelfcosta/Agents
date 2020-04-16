@@ -21,14 +21,17 @@ import java.util.logging.Logger;
  */
 public class Enemy extends Char {
 
-    private final int DAMAGE = 30;
+    private final int DAMAGE = 100;
     private final int atkCooldown = 5000;
+    private final int HP = 800;
+    private final int CRITICAL_DAMAGE = (int) (DAMAGE * 1.5);
 
     @Override
     protected void setup() {
         super.setup();
+        configureHP();
 
-        System.out.println("Enemy " + getAID().getName() + " is ready");
+        System.out.println("Enemy " + getAID().getName() + " is ready with " + getCURRENT_HP() + " HP");
 
         DFAgentDescription dfd = new DFAgentDescription();
         dfd.setName(getAID());
@@ -42,7 +45,7 @@ public class Enemy extends Char {
         } catch (FIPAException ex) {
             Logger.getLogger(Enemy.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
+
         DFAgentDescription teamSearch = new DFAgentDescription();
         ServiceDescription sd = new ServiceDescription();
         sd.setType("hero");
@@ -58,7 +61,11 @@ public class Enemy extends Char {
                             AID name = a.getName();
                             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
                             msg.addReceiver(name);
-                            msg.setContent("damage," + Integer.toString(DAMAGE));
+                            int ATK = DAMAGE;
+                            if(Math.random() <= 0.3){
+                               ATK = CRITICAL_DAMAGE;
+                            }
+                            msg.setContent("damage," + Integer.toString(ATK));
                             myAgent.send(msg);
                         }
                     }
@@ -67,5 +74,10 @@ public class Enemy extends Char {
                 }
             }
         });
+    }
+
+    private void configureHP() {
+        setMAX_HP(HP);
+        setCURRENT_HP(HP);
     }
 }

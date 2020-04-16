@@ -21,11 +21,13 @@ public class Healer extends Hero {
 
     private final int HEAL_AMOUT = 150;
     private final int healCooldown = 4000;
+    private final int HP = 200;
     private Long lastHeal = System.currentTimeMillis();
-
+    
     @Override
     protected void setup() {
         super.setup();
+        configureHP();
         
         try {
             DFService.deregister(this);
@@ -68,5 +70,10 @@ public class Healer extends Hero {
             }
         }
         );
+    }
+    
+    private void configureHP() {
+        setMAX_HP(HP);
+        setCURRENT_HP(HP);
     }
 }

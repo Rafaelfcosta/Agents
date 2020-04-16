@@ -20,9 +20,19 @@ public class Agents extends Agent {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+//        String dps = "";
+//        for (int i = 0; i < 10; i++) {
+//            dps += "DPS" + i + ":agents.chars.Dps;";
+//        };
+
         String[] params = new String[2];
         params[0] = "-gui";
-        params[1] = "Mercy:agents.chars.Healer(100); Rein:agents.chars.Tank(500); Hilha:agents.chars.Enemy(5000); Genji:agents.chars.Dps(100)";
+        params[1]
+                = "Mercy:agents.chars.Healer; "
+                + "Rein:agents.chars.Tank; "
+                + "Genji:agents.chars.Dps;"
+                + "EnderDragon:agents.chars.Enemy;";
         Boot.main(params);
     }
 }

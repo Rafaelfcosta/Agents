@@ -26,13 +26,6 @@ public abstract class Char extends Agent {
 
     @Override
     protected void setup() {
-        Object[] args = getArguments();
-        if (args != null && args.length > 0) {
-            setMAX_HP(Integer.parseInt((String) args[0]));
-            setCURRENT_HP(Integer.parseInt((String) args[0]));
-
-        }
-
         addBehaviour(new CyclicBehaviour(this) {
 
             @Override

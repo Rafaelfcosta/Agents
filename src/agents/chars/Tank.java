@@ -24,11 +24,13 @@ public class Tank extends Hero {
     private final int atkCooldown = 5000;
     private final int armorCooldown = 50000;
     private final int MAX_ARMOR = 200;
+    private final int HP = 500;
+    
     @Override
     protected void setup() {
         super.setup();
-        ARMOR_HP = MAX_ARMOR;
-        CURRENT_ARMOR_HP = ARMOR_HP;
+        configureHP();
+       
         System.out.println("Tank " + getAID().getName() + " is ready with "
                 + getCURRENT_HP() + " HP and " + getCURRENT_ARMOR_HP() + " Armor");
 
@@ -58,5 +60,12 @@ public class Tank extends Hero {
                 setCURRENT_ARMOR_HP(ARMOR_HP);
             }
         });
+    }
+
+    private void configureHP() {
+        setMAX_HP(HP);
+        setCURRENT_HP(HP);
+        setARMOR_HP(MAX_ARMOR);
+        setCURRENT_ARMOR_HP(ARMOR_HP);
     }
 }
