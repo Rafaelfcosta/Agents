@@ -24,11 +24,6 @@ public class Agents extends Agent {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
-//        String dps = "";
-//        for (int i = 0; i < 10; i++) {
-//            dps += "DPS" + i + ":agents.chars.Dps;";
-//        };
         String[] per = {"Mercy","Rein", "Genji", "EnderDragon"};
         JSONArray characters = new JSONArray();
         
