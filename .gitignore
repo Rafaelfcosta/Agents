@@ -7,3 +7,5 @@ nbproject/build-impl.xml
 APDescription.txt
 
 nbproject/private/
+
+agents-display/node_modules/

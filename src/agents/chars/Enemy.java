@@ -12,8 +12,14 @@ import jade.domain.FIPAAgentManagement.DFAgentDescription;
 import jade.domain.FIPAAgentManagement.ServiceDescription;
 import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 /**
  *
@@ -74,10 +80,50 @@ public class Enemy extends Char {
                 }
             }
         });
+        
+        addBehaviour(new TickerBehaviour(this, 3000) {
+            
+            @Override
+            protected void onTick() {
+                updateJson();
+            }
+        });
     }
 
     private void configureHP() {
         setMAX_HP(HP);
         setCURRENT_HP(HP);
+    }
+    
+    private void updateJson() {
+        try {
+            Reader reader = new FileReader("chars.json");
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(reader);
+            JSONArray arr = (JSONArray) obj;
+            for (int i = 0; i < arr.size(); i++) {
+                JSONObject chara = (JSONObject) arr.get(i);
+                if (chara.get("name").equals(this.getLocalName())) {
+                    chara.put("maxHp", getMAX_HP());
+                    chara.put("hp", getCURRENT_HP());
+                    chara.put("type", "enemy");
+                    
+                    
+                }
+            }
+                        
+            FileWriter file = new FileWriter("chars.json");
+            file.write(arr.toJSONString());
+            file.flush();
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    protected void takeDown() {
+        super.takeDown(); //To change body of generated methods, choose Tools | Templates.
+        updateJson();
     }
 }
