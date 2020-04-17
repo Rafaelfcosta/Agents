@@ -5,6 +5,7 @@
  */
 package agents.chars;
 
+import jade.core.AID;
 import jade.core.Agent;
 import jade.core.behaviours.CyclicBehaviour;
 import jade.domain.DFService;
@@ -33,7 +34,6 @@ public abstract class Char extends Agent {
                 if (getCURRENT_HP() <= 0) {
                     doDelete();
                 }
-
                 ACLMessage msg = myAgent.receive();
                 if (msg != null) {
                     if (msg.getContent().startsWith("healing")) {
@@ -48,12 +48,29 @@ public abstract class Char extends Agent {
                         } else {
                             System.out.println(myAgent.getName() + " " + getCURRENT_HP() + " HP - Armor " + getCURRENT_ARMOR_HP());
                         }
+                    } else if (msg.getContent().startsWith("status")) {
+                        sendUpdateStatsMsg();
                     } else {
                         block();
                     }
                 }
             }
         });
+    }
+
+    public String getStats() {
+        return "description,"
+                + this.getLocalName() + ","
+                + this.getClass().getSimpleName().toLowerCase() + ","
+                + getMAX_HP() + ","
+                + getCURRENT_HP();
+    }
+    
+    public void sendUpdateStatsMsg() {
+        ACLMessage lastMsg = new ACLMessage(ACLMessage.INFORM);
+        lastMsg.addReceiver(new AID("Updater", AID.ISLOCALNAME));
+        lastMsg.setContent(getStats());
+        this.send(lastMsg);
     }
 
     public int getMAX_HP() {
@@ -115,6 +132,7 @@ public abstract class Char extends Agent {
     @Override
     protected void takeDown() {
         super.takeDown();
+        sendUpdateStatsMsg();
         try {
             DFService.deregister(this);
         } catch (FIPAException ex) {

@@ -13,6 +13,7 @@ import jade.domain.FIPAException;
 import jade.lang.acl.ACLMessage;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Reader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,7 +36,7 @@ public class Healer extends Hero {
     protected void setup() {
         super.setup();
         configureHP();
-
+        
         try {
             DFService.deregister(this);
         } catch (FIPAException ex) {
@@ -75,51 +76,11 @@ public class Healer extends Hero {
                     }
                 }
             }
-        });
-        
-        addBehaviour(new TickerBehaviour(this, 3000) {
-            
-            @Override
-            protected void onTick() {
-                updateJson();
-            }
-        });
+        });        
     }
 
     private void configureHP() {
         setMAX_HP(HP);
         setCURRENT_HP(HP);
-    }
-
-    private void updateJson() {
-        try {
-            Reader reader = new FileReader("chars.json");
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(reader);
-            JSONArray arr = (JSONArray) obj;
-            for (int i = 0; i < arr.size(); i++) {
-                JSONObject chara = (JSONObject) arr.get(i);
-                if (chara.get("name").equals(this.getLocalName())) {
-                    chara.put("maxHp", getMAX_HP());
-                    chara.put("hp", getCURRENT_HP());
-                    chara.put("type", "healer");
-                    
-                    
-                }
-            }
-                        
-            FileWriter file = new FileWriter("chars.json");
-            file.write(arr.toJSONString());
-            file.flush();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void takeDown() {
-        super.takeDown(); //To change body of generated methods, choose Tools | Templates.
-        updateJson();
     }
 }

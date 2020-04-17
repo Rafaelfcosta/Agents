@@ -56,7 +56,8 @@ public class Agents extends Agent {
                 = "Mercy:agents.chars.Healer; "
                 + "Rein:agents.chars.Tank; "
                 + "Genji:agents.chars.Dps;"
-                + "EnderDragon:agents.chars.Enemy;";
+                + "EnderDragon:agents.chars.Enemy;"
+                + "Updater:agents.chars.AgentUpdater;";
         Boot.main(params);
         
         

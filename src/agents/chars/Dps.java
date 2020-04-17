@@ -34,6 +34,7 @@ public class Dps extends Hero {
     protected void setup() {
         super.setup();
         configureHP();
+        
         System.out.println("Dps " + getAID().getName() + " is ready with " + getCURRENT_HP() + " HP");
      
         addBehaviour(new TickerBehaviour(this, atkCooldown) {
@@ -59,46 +60,7 @@ public class Dps extends Hero {
                 }
             }
         });
-        
-        addBehaviour(new TickerBehaviour(this, 2000) {
-            
-            @Override
-            protected void onTick() {
-                updateJson();
-            }
-        });
-    }
-    
-    private void updateJson() {
-        try {
-            Reader reader = new FileReader("chars.json");
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(reader);
-            JSONArray arr = (JSONArray) obj;
-            for (int i = 0; i < arr.size(); i++) {
-                JSONObject chara = (JSONObject) arr.get(i);
-                if (chara.get("name").equals(this.getLocalName())) {
-                    chara.put("maxHp", getMAX_HP());
-                    chara.put("hp", getCURRENT_HP());
-                    chara.put("type", "dps");
-                    
-                    
-                }
-            }
-                        
-            FileWriter file = new FileWriter("chars.json");
-            file.write(arr.toJSONString());
-            file.flush();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 
-    @Override
-    protected void takeDown() {
-        super.takeDown(); //To change body of generated methods, choose Tools | Templates.
-        updateJson();
     }
     
     private void configureHP() {

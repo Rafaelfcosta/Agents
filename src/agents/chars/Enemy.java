@@ -68,8 +68,8 @@ public class Enemy extends Char {
                             ACLMessage msg = new ACLMessage(ACLMessage.INFORM);
                             msg.addReceiver(name);
                             int ATK = DAMAGE;
-                            if(Math.random() <= 0.3){
-                               ATK = CRITICAL_DAMAGE;
+                            if (Math.random() <= 0.3) {
+                                ATK = CRITICAL_DAMAGE;
                             }
                             msg.setContent("damage," + Integer.toString(ATK));
                             myAgent.send(msg);
@@ -80,50 +80,10 @@ public class Enemy extends Char {
                 }
             }
         });
-        
-        addBehaviour(new TickerBehaviour(this, 3000) {
-            
-            @Override
-            protected void onTick() {
-                updateJson();
-            }
-        });
     }
 
     private void configureHP() {
         setMAX_HP(HP);
         setCURRENT_HP(HP);
-    }
-    
-    private void updateJson() {
-        try {
-            Reader reader = new FileReader("chars.json");
-            JSONParser parser = new JSONParser();
-            Object obj = parser.parse(reader);
-            JSONArray arr = (JSONArray) obj;
-            for (int i = 0; i < arr.size(); i++) {
-                JSONObject chara = (JSONObject) arr.get(i);
-                if (chara.get("name").equals(this.getLocalName())) {
-                    chara.put("maxHp", getMAX_HP());
-                    chara.put("hp", getCURRENT_HP());
-                    chara.put("type", "enemy");
-                    
-                    
-                }
-            }
-                        
-            FileWriter file = new FileWriter("chars.json");
-            file.write(arr.toJSONString());
-            file.flush();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    protected void takeDown() {
-        super.takeDown(); //To change body of generated methods, choose Tools | Templates.
-        updateJson();
     }
 }

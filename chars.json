@@ -1,1 +1,6 @@
-[{"maxHp":200,"name":"Mercy","hp":0,"type":"healer"},{"maxHp":500,"name":"Rein","hp":0,"type":"tank"},{"maxHp":200,"name":"Genji","hp":0,"type":"dps"},{"maxHp":800,"name":"EnderDragon","hp":325,"type":"enemy"}]
+[
+  {"name": "Mecy", "type": "healer", "maxHp": 200, "hp": 200},
+  {"name": "Rein", "type": "tank", "maxHp": 500, "hp": 500},
+  {"name": "Genji", "type": "dps", "maxHp": 200, "hp": 200},
+  {"name": "EnderDragon", "type": "enemy", "maxHp": 800, "hp": 800}
+]
